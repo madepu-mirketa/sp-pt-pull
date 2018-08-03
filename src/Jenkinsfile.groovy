@@ -50,11 +50,18 @@ node{
 
         def json = new JsonSlurper().parseText(response.content)
         storyIds=json*.id
-        println "storyIds: "+ storyIds
+        println "storyIds: "+ storyIds.flatten()
+        println "story count: "+ storyIds.size()
         labels=json*.labels.name
         println "labels: "+labels
         branches=json*.branches.name
-        println "branches: "+branches
+        println "branches: "+branches.flatten()
+        println "branch count: "+branches.size()
+    }
+    stage('CI build'){
+        //if(storyIds.isempty()) {
+            //build job: 'sp-ci', parameters: [string(name: 'story_id', value: pt_story_id)]
+        //}
     }
 }
 
