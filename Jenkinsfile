@@ -6,7 +6,7 @@ node{
 		apiToken     = credentials('pt_api_token')
 	}
 	stage('prepare check'){
-		if(apiToken.equals(""){
+		if(apiToken.equals("")){
 			println "Please set Jenkins credentials with pt_api_token"
 			retun 
 		}
