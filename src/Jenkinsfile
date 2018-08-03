@@ -2,9 +2,26 @@ import groovy.json.JsonSlurper
 
 node{
 	def apiToken=''
+	def storyIds, labels, branches
+	
+	def storiesPathTemplate = "projects/%s/stories"
+	def storiesLabelPathTemplate = "projects/%s/stories/%s/labels"
+	def storyPathTemplate = "projects/%s/stories/%s"
+
+	def pt_project_id='2186074'
+	def pt_state='finished'
+	def pt_label=''
+	def pt_update_after=''
+
+	//def pt_project_id=env.pt_project_id
+	//def pt_state=env.pt_state
+	//def pt_label=env.pt_label
+	//def pt_update_after=env.pt_update_after
+
+	def base ="https://www.pivotaltracker.com/services/v5/"
+	
 	withCredentials([string(credentialsId: 'pt_api_token', variable: 'pt_api_token')]) {
 		apiToken = pt_api_token
-		println apiToken
 	}
 	stage('prepare check'){
 		if(apiToken.equals("")){
@@ -13,21 +30,6 @@ node{
 		}
 	}
 	stage('get updates from pivotal'){
-		def base ="https://www.pivotaltracker.com/services/v5/"
-
-		def storiesPathTemplate = "projects/%s/stories"
-		def storiesLabelPathTemplate = "projects/%s/stories/%s/labels"
-		def storyPathTemplate = "projects/%s/stories/%s"
-
-		def pt_project_id='2186074'
-		def pt_state='finished'
-		def pt_label=''
-		def pt_update_after=''
-
-		//def pt_project_id=env.pt_project_id
-		//def pt_state=env.pt_state
-		//def pt_label=env.pt_label
-		//def pt_update_after=env.pt_update_after
 
 		def storiesPath=String.format(storiesPathTemplate,pt_project_id)	
 
@@ -43,11 +45,10 @@ node{
 		def headers=[maskValue: true, name: 'X-TrackerToken', value: apiToken]
 
 		def response = httpRequest acceptType: 'APPLICATION_JSON', contentType: 'APPLICATION_JSON', customHeaders: [headers], responseHandle: 'LEAVE_OPEN', url: pt_url
-	//	println('Status: '+response.status)
-	//	println('Response: '+response.content)
+		//println('Status: '+response.status)
+		//println('Response: '+response.content)
 
 		def json = new JsonSlurper().parseText(response.content)
-		def storyIds, labels, branches
 		storyIds=json*.id
 		println "storyIds: "+ storyIds
 		labels=json*.labels.name
