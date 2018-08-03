@@ -2,8 +2,8 @@ import groovy.json.JsonSlurper
 
 node{
 	def apiToken=''
-	environment {
-		apiToken = credentials('pt_api_token')
+	withCredentials([string(credentialsId: 'pt_api_token', variable: 'pt_api_token')]) {
+		apiToken = pt_api_token
 		println apiToken
 	}
 	stage('prepare check'){
